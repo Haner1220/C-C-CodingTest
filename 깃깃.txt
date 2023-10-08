@@ -1,0 +1,14 @@
+$ git config --global user.name {Name}
+$ git config --global user.email {Email}
+$ git config --list
+1 git init
+2 git add .
+또는
+  git add 파일명
+3 git commit -m "{commit HelloWorld.c file}"
+4 git remote add origin {https://github.com/Haner1220/C-C-CodingTest.git}
+  git remote add origin {https://github.com/Haner1220/Python-CodingTest.git}
+5 git remote -v
+*git remote remove origin
+오리진 연결 해제
+6 git push origin master
