@@ -1,0 +1,41 @@
+level 0
+tips :
+1. cntl + l = clear 명령어와 같음
+2. ls : 파일 목록 표시
+3. cat : 파일 열기
+NH2SXQwcBdpmTEzi3bvBHMM9H66vVXjL
+---------------------------------------------------
+level 1  
+tips:
+1. 파일명이 '-' 인 경우에는 
+dev/stdin or dev/stdout에서 파일명을 참조하기 때문에 에러가 날수 있다,
+이런 경우엔 ./- 형식으로 열면 된다.
+rRGizSaX8Mk1RTb1CNQoXTcYZWU6lgzi
+---------------------------------------------------
+level 2
+tips :
+1. 파일명에 공백이 포함되어있을 때
+'파일명'
+or
+"파일명" or '파일명' 을 통해 open 가능하다.
+aBZ0W5EmUfAf7kHTQeOwd8bauFJ2lAiG
+---------------------------------------------------
+level 3
+tips:
+1. ls -l = ll과 같은 의미
+2. 숨긴 파일 표시를 원하면 ls -a를 통해 표시 가능하다.
+2EW7BBsr6aMMoJ2HjW067dm8EgX26xNe
+---------------------------------------------------
+level 4
+just 'cat' or 'vi'
+lrIWWI6bB37kxfiCQZqUdOIYfr6eEeqR
+---------------------------------------------------
+level 5
+ll로 무식하게 찾는 방법으로 풀었다.
+1033 byte size인 txt 파일을 찾았다.
+P4L4vucdmLnm8I7Vl7jG1ApGSfjYKqJU
+---------------------------------------------------
+level 6
+find / -type f -user bandit6 -size 33c
+find /home -type f -user bandit6(user) -size 33c(byte)
+P4L4vucdmLnm8I7Vl7jG1ApGSfjYKqJU
