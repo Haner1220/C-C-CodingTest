@@ -1,0 +1,202 @@
+- ip 수정(영구 적용) -
+# 경로 : /etc/sysconfig/network-scripts/ifcfg-* 
+# 기존값 : BOOTPROTO="dhcp"
+# 수정 예시
+BOOTPROTO="static" 
+IPADDR="192.168.55.108"
+NETMASK="255.255.255.0"
+GATEWAY="192.168.55.1"
+# 네트워크 재시작
+systemctl restart network
+# ip dump 따기
+tcpdump -i eth* host 192.168.55.107 | grep 25565
+
+- find 명령 예시 -
+find [옵션] [경로] [표현식]
+# 현재 디렉토리에서 test가 포함되는 파일 찾기
+find . -name "*test*" 
+# 현재 디렉토리에서 .txt 확장자 모두 찾기
+find . -name "*.txt"
+# 현재 디렉토리에서 .txt 확장자 파일 검색 후 모두 삭제
+find . -name "*.txt" -delete
+# 현재 디렉토리에서 test로 시작되는 파일 찾기
+find . -name "test*"
+# 현재 디렉토리에서 test로 끝나는 파일 찾기
+find . -name "*test"
+
+- 방화벽 -
+1.firewall(리눅스에선 firewalld를 제공)
+# 8440-8446 이런 식으로 대역으로 설정도 가능
+# 규칙 확인
+firewall-cmd --permanent --zone=public --list-all
+# 접속 포트 추가
+firewall-cmd --permanent --zone=public --add-port=[포트번호]/tcp 
+# 접속 포트 삭제
+firewall-cmd --permanent --zone=public --remove-port=[포트번호]/tcp 
+# IP 허용
+firewall-cmd --permanent --add-source=[IP주소]
+# IP 차단
+firewall-cmd --permanent --remove-source=[IP주소]
+# 방화벽 변경 사항적용
+firewall-cmd --reload
+
+2.iptables(리눅스상에서 방화벽 설정을 하는 도구)
+특징 : 패킷 필터링(패킷의 헤더를 확인하여 접속 허용 여부 결정)을 한다.
+# 규칙 확인
+iptables --list
+# 포트 열기
+iptables -I [사슬] -p [프로토콜] --dport [포트번호] -j [타겟]
+# 포트 닫기
+iptables -D [사슬] -p [프로토콜] --dport [포트번호] -j [타겟]
+
+# 사슬<동작> (INPUT / OUTPUT / PREROUTING / POSTROUTING)
+# 타겟<규칙> (ACCEPT / DROP / REJECT / LOG)
+iptables의 사슬
+#INPUT = 패킷 필터링, 실질적인 접근 통제
+#FORWARD = 리눅스 시스템을 통과하는 패킷을 관리
+#OUTPUT = Untrust Zone에서 오는 접근을 차단
+3.SELinux(Security Enhanced Linux, 리눅스용 보안 아키텍쳐)
+#모드(상태) 확인
+sestatus
+getenforce
+#SELinux 해제/사용
+setenforce 0 (해제)
+setenforce 1 (설정)
+#모드영구설정
+#경로 : /etc/selinux/config
+SELINUX = permissive (권장 / 제한되는 컨텐츠에 대한 액세스를 일시적으로 허용, 얘도 뭔소리니)
+SELINUX = enforcing (기본값 / 파일을 읽으려는 액세스 거부, 이해 잘 안됨 솔직히)
+SELINUX = disabled (SELinux 비활성화)
+#보호방식설정(설명이 이해가 잘안됨)
+#경로 : /etc/selinux/config
+SELINUXTYPE=targeted (대상 프로세스 보호)
+SELINUXTYPE=minimum (선택한 프로세스만 보호)
+SELINUXTYPE=mls (멀티 레벨 보호)
+
+- Java -
+#Java 버전확인
+java -version
+
+- SSH -
+#SSH 포트 확인
+netstat -tlnp | grep sshd
+cat /etc/ssh/sshd_config | grep "Port"
+#SSH 포트 설정 변경
+#경로 : /etc/ssh/sshd_config
+..(생략)
+Port 22
+Port 1234
+..(생략)
+#재시작
+systemctl restart ssh
+#외부에서 접속 
+ssh testuser@135.79.246.80
+#openssh 버전확인
+ssh -V
+
+- 권한 -
+ls -al 또는 ll을 통해 권한 확인 가능
+# ex.[FileType:- or d][Owner:rwx][Group:rwx][Others:rwx]
+#chmod(change mode)
+# 모든 사용자에게 x권한 부여
+chmod +x test.txt
+# 유저의 x 권한 박탈
+chmod u-x test.txt
+# 여러 타입의 권한 변경과 같은 경우, 콤마로 구분
+chmod g-x,o-x test.txt
+# 숫자를 통해 변경
+chmod 760 test.txt	
+# 실행 관련 권한
+./ = 실행 권한이 있어야 스크립트가 실행 됨
+sh = 실행권한이 없어도 스크립트가 실행 됨
+su = switch user란 뜻
+# 환경변수를 가져오지 않고 현재 계정의 환경변수를 사용함
+su
+# 로그인 시 /root 디렉터리로 이동되며 환경변수를 가져옴
+su -
+# 현재 계정에서 root 권한만 빌림
+sudo
+# 현재 사용자 확인
+whoami
+# 전환 전 계정으로 돌아갈 때
+logout
+exit
+
+- 프로세스 - 
+# 백그라운드 작업 보기
+jobs
+# 백그라운드로 옮기기
+1.crtl + z로 일시 중지 
+2.bg %[작업번호] 입력
+# 포어그라운드로 옮기기
+1.jobs로 명령 번호 확인
+2.fg %[작업번호] 입력
+
+- 설치 및 패키지매니저 -
+#wget = 리눅스 및 유닉스에서 제공하는 웹상의 파일을 다운로드할 때 사용하는 명령줄 도구
+wget [download url]
+#tar = 디렉터리를 압축하거나 해제하는 기능을 하는 도구(tar,tar.gz,tar.bz2,tar.xz...)
+옵션
+-c : 아카이브 생성
+-x : 아카이브 추출
+-f : 파일 지정(기본)
+-z : gzip 전용
+-j : bzip2 전용
+-J : xz 전용
+#tar 파일 압축 해제
+tar -xf text.tar 
+#tar 파일 압축(tar -cf 결과파일.tar 파일1 파일2 디렉터리)
+tar -cf result.tar file1 file2 /root/
+
+-자바 환경 변수-
+# 예시 : tar -xf jdk-17_linux-x64_bin.tar.gz 압축 해제
+vi ~/.bash_profile 또는 vi ~/.bashrc
+export JAVA_HOME=/path/to/your/openjdk-버전
+export PATH=$JAVA_HOME/bin:$PATH
+source ~/.bash_profile 또는 source ~/.bashrc
+
+-마크 서버 여는 과정 -25862
+# 1. wget을 통하든 sftp로 가져오든 암튼 자바 최신 버전 및 환경변수 세팅 하기
+# 2. 마크 서버를 넣을 디렉터리 생성
+mkdir minecraft_server
+cd minecraft_server
+# 3. wget을 통하든 sftp을 통하든 해당 경로에 최신 서버 파일을 다운로드한다.
+# 4. 실행 스크립트 작성 및 실행
+echo "java -Xmx1024M -Xms1024M -jar 마크서버.jar nogui" > start.sh(Xms = 최소, Xmx = 최대)
+chmod +x start.sh
+./start.sh
+vi eula.txt
+# 수정 내용 : eula=true
+# 5. 접속 포트 설정
+sudo firewall-cmd --zone=public --add-port=25565/tcp --permanent
+sudo firewall-cmd --reload
+# 6. 서버 시작
+./start.sh
+# 7. 포트 설명 
+query.port : 서버 정보, 플레이어 정보 등등 정보를 얻기위한 프로토콜
+rcon.port : 원격 콘솔 접속을 허용하는 프로토콜
+# 8. 맵 삭제 
+rm -rf world/
+# 9. op 주는법
+vi ops.json
+참고 : https://api.mojang.com/users/profiles/minecraft/KanzenGoat
+[
+  {
+    "uuid": "06b6e53352c14dffa93510fadcf6a48f",
+    "name": "KanzenGoat",
+    "level": 4
+  }
+]
+
+- tomcat -
+tomcat도 기본적으로 java를 기반으로 동작하므로 OpenJDK 또는 Oracle JDK 중 하나를 설치해야 구동된다
+sudo yum install java-1.8.0-openjdk
+yum install tomcat
+cd [톰캣 경로]
+./bin/startup.sh
+- 기타 꿀팁 - 
+# cp 명령어 수행 시 omitting 관련 오류가 뜰때 : cp -r 로 해결 가능하다
+
+#top 명령어 입력 후 us값(사용자 cpu 사용률), id값(유후,idle인 비율)
+- 버전 확인 -
+오늘의 마인드 셋 : 모든 것엔 가치가 있기 마련이니, 내가 얻을 수 있는 모든것을 얻어라
